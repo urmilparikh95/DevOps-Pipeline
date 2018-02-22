@@ -67,6 +67,15 @@
       dest: /sync_data/checkbox/
     force: yes
 
+  - name: Create MongoDB configuration
+    mongodb_user:
+      database: admin
+      user: "{{ MONGO_USER }}"
+      password: "{{ MONGO_PASSWORD }}"
+      roles: userAdminAnyDatabase,dbAdmin,readWriteAnyDatabase
+      state: present
+    become: yes 
+
   - name: del nginx.conf
     file: 
       path: /etc/nginx/nginx.conf
