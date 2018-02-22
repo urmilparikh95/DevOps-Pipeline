@@ -117,7 +117,7 @@
       path: /sync_data/checkbox/server-side/site/
 
   - name: Run
-    command: node server.js
+    command: nohup node server.js &
     args: 
       chdir: /sync_data/checkbox/server-side/site/
     environment:
