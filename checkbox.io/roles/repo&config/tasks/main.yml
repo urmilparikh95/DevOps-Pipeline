@@ -1,0 +1,33 @@
+- name: Create MongoDB configuration
+  mongodb_user:
+    database: admin
+    user: "{{ MONGO_USER }}"
+    password: "{{ MONGO_PASSWORD }}"
+    roles: userAdminAnyDatabase,dbAdmin,readWriteAnyDatabase
+    state: present
+  become: yes
+
+- name: copy nginx.conf
+  copy: 
+    remote_src: yes
+    src: /sync_data/checkbox/local-conf/nginx.conf 
+    dest: /etc/nginx/nginx.conf
+  become: yes
+
+- name: copy default
+  copy:
+    remote_src: yes
+    src: /sync_data/checkbox/local-conf/default 
+    dest: /etc/nginx/sites-available/default
+  become: yes
+
+- name: Modify checkbox.io
+  replace:
+    path: /etc/nginx/sites-available/default
+    regexp: '/Users/gameweld/bitbucket/checkbox.io/checkbox.io/public_html/'
+    replace: '/sync_data/checkbox/public_html'
+  become: yes
+
+- name: npm Install
+  npm:
+    path: /sync_data/checkbox/server-side/site/
