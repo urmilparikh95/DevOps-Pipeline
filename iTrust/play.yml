@@ -1,13 +1,9 @@
 ---
-- hosts: localhost
+- hosts: itrust
 
-  vars_prompt:
-    - name: "githubuser"
-      prompt: "Enter your github username"
-      private: no
-    - name: "githubpassword"
-      prompt: "Enter your github password"
-      private: yes
+  vars:
+    githubuser: "{{ lookup('env', 'githubuser') }}"
+    githubpassword: "{{ lookup('env', 'githubpassword') }}"
     
   tasks:
 
@@ -31,7 +27,7 @@
       state: present
     become: yes
 
-  - name: Install java 8
+  - name: Install dependencies
     apt: 
       name: '{{ item }}' 
       state: latest 
@@ -40,45 +36,12 @@
       - git
       - oracle-java8-installer
       - maven
-    become: yes
-
-  # - name: Add MySQL Apt Key
-  #   apt_key:
-  #     keyserver: pgpkeys.mit.edu
-  #     id: 8C718D3B5072E1F5
-  #   become: yes
-
-  # - name: Add MySQL repository
-  #   apt_repository: 
-  #     repo: deb http://repo.mysql.com/apt/ubuntu/ trusty mysql-5.5  
-  #   become: yes
-
-  # - name: Set root password for MySQL
-  #   debconf:
-  #     name: mysql-community-server
-  #     question: 'mysql-community-server/root-pass'
-  #     value: '{{mysqlpassword}}' 
-  #     vtype: password
-  #   become: yes
-
-  # - name: Set root password again for MySQL
-  #   debconf:
-  #     name: mysql-community-server
-  #     question: 'mysql-community-server/re-root-pass'
-  #     value: '{{mysqlpassword}}'
-  #     vtype: password
-  #   become: yes
-
-  - name: Install MySQL 5.5
-    apt:
-      pkg: 'mysql-server-5.5'
-      state: present
-      update_cache: true
+      - mysql-server-5.5
     become: yes
 
   - name: Git clone iTrust
     git: 
-      repo: https://{{githubuser}}:{{githubpassword | urlencode }}@github.ncsu.edu/engr-csc326-staff/iTrust2-v2.git 
+      repo: https://{{githubuser}}:{{githubpassword}}@github.ncsu.edu/engr-csc326-staff/iTrust2-v2.git 
       dest: /home/vagrant/git/
     force: yes
 
@@ -115,7 +78,6 @@
       chdir: /home/vagrant/git/iTrust2/
 
   - name: mvn run
-    command: nohup mvn jetty:run
+    command: nohup mvn jetty:run &
     args:
       chdir: /home/vagrant/git/iTrust2/
-
