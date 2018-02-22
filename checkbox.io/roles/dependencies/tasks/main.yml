@@ -17,17 +17,14 @@
 
 - name: Add mongo sources list
   apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.6 multiverse"
-    state: present
+    repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse"
   become: yes
 
 - name: Install mongodb 3.6
   update_cache: yes
   apt:
     name: mongodb-org
-    state: latest
   become: yes
-  force: yes
 
 - name: Install dependencies
   update_cache: yes
@@ -38,6 +35,7 @@
     - git
     - nginx
     - python-pip
+    - python3-pip
   become: yes
 
 - name: Install pymongo

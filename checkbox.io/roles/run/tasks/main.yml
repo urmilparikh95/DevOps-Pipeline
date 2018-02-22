@@ -10,7 +10,7 @@
 - name: Run
   command: bash -lc "nohup node server.js &"
   args: 
-    chdir: /sync_data/checkbox/server-side/site/
+    chdir: /home/ubuntu/checkbox/server-side/site/
   environment:
     MONGO_PORT: "{{ MONGO_PORT }}"
     MONGO_IP: "{{ MONGO_IP }}"

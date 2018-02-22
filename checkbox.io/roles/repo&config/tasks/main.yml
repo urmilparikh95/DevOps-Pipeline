@@ -1,3 +1,15 @@
+- name: git clone
+  git: 
+    repo: https://github.com/chrisparnin/checkbox.io.git
+    dest: /home/ubuntu/checkbox/
+    force: yes
+
+- name: start the mongod service
+  service: 
+    name: mongod 
+    state: started
+  become: yes
+
 - name: Create MongoDB configuration
   mongodb_user:
     database: admin
@@ -10,14 +22,14 @@
 - name: copy nginx.conf
   copy: 
     remote_src: yes
-    src: /sync_data/checkbox/local-conf/nginx.conf 
+    src: /home/ubuntu/checkbox/local-conf/nginx.conf 
     dest: /etc/nginx/nginx.conf
   become: yes
 
 - name: copy default
   copy:
     remote_src: yes
-    src: /sync_data/checkbox/local-conf/default 
+    src: /home/ubuntu/checkbox/local-conf/default 
     dest: /etc/nginx/sites-available/default
   become: yes
 
@@ -25,9 +37,9 @@
   replace:
     path: /etc/nginx/sites-available/default
     regexp: '/Users/gameweld/bitbucket/checkbox.io/checkbox.io/public_html/'
-    replace: '/sync_data/checkbox/public_html'
+    replace: '/home/ubuntu/checkbox/public_html'
   become: yes
 
 - name: npm Install
   npm:
-    path: /sync_data/checkbox/server-side/site/
+    path: /home/ubuntu/checkbox/server-side/site/
