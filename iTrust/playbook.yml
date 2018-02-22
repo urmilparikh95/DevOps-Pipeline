@@ -1,0 +1,121 @@
+---
+- hosts: localhost
+
+  vars_prompt:
+    - name: "githubuser"
+      prompt: "Enter your github username"
+      private: no
+    - name: "githubpassword"
+      prompt: "Enter your github password"
+      private: yes
+    
+  tasks:
+
+  - name: Add repo for java 8
+    apt_repository: 
+      repo: 'ppa:webupd8team/java' 
+      state: present
+    become: yes
+
+  - name: Set licence selected for oracle java 8
+    shell: /bin/echo debconf shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+    become: yes
+
+  - name: Set licence seen for oracle java 8
+    shell: /bin/echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-set-selections
+    become: yes
+
+  - name: Add repo for maven
+    apt_repository: 
+      repo: 'ppa:andrei-pozolotin/maven3' 
+      state: present
+    become: yes
+
+  - name: Install java 8
+    apt: 
+      name: '{{ item }}' 
+      state: latest 
+      update-cache: yes
+    with_items:
+      - git
+      - oracle-java8-installer
+      - maven
+    become: yes
+
+  # - name: Add MySQL Apt Key
+  #   apt_key:
+  #     keyserver: pgpkeys.mit.edu
+  #     id: 8C718D3B5072E1F5
+  #   become: yes
+
+  # - name: Add MySQL repository
+  #   apt_repository: 
+  #     repo: deb http://repo.mysql.com/apt/ubuntu/ trusty mysql-5.5  
+  #   become: yes
+
+  # - name: Set root password for MySQL
+  #   debconf:
+  #     name: mysql-community-server
+  #     question: 'mysql-community-server/root-pass'
+  #     value: '{{mysqlpassword}}' 
+  #     vtype: password
+  #   become: yes
+
+  # - name: Set root password again for MySQL
+  #   debconf:
+  #     name: mysql-community-server
+  #     question: 'mysql-community-server/re-root-pass'
+  #     value: '{{mysqlpassword}}'
+  #     vtype: password
+  #   become: yes
+
+  - name: Install MySQL 5.5
+    apt:
+      pkg: 'mysql-server-5.5'
+      state: present
+      update_cache: true
+    become: yes
+
+  - name: Git clone iTrust
+    git: 
+      repo: https://{{githubuser}}:{{githubpassword | urlencode }}@github.ncsu.edu/engr-csc326-staff/iTrust2-v2.git 
+      dest: /home/vagrant/git/
+    force: yes
+
+  - name: Copy hibernate template file
+    copy: 
+      remote_src: yes
+      src: /home/vagrant/git/iTrust2/src/main/resources/hibernate.properties.template
+      dest: /home/vagrant/git/iTrust2/src/main/resources/hibernate.properties
+    become: yes
+
+  - name: Copy db template file
+    copy: 
+      remote_src: yes
+      src: /home/vagrant/git/iTrust2/src/main/java/db.properties.template
+      dest: /home/vagrant/git/iTrust2/src/main/java/db.properties
+    become: yes
+
+  - name: Copy email template file
+    copy: 
+      remote_src: yes
+      src: /home/vagrant/git/iTrust2/src/main/java/email.properties.template
+      dest: /home/vagrant/git/iTrust2/src/main/java/email.properties
+    become: yes  
+
+  - name: start the mongod service
+    service: 
+      name: mysql
+      state: restarted
+    become: yes
+
+  - name: mvn process
+    command: mvn process-test-classes
+    args:
+      chdir: /home/vagrant/git/iTrust2/
+
+  - name: mvn run
+    command: nohup mvn jetty:run
+    args:
+      chdir: /home/vagrant/git/iTrust2/
+
