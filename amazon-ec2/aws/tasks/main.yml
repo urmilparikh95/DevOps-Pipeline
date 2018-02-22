@@ -1,0 +1,11 @@
+---
+- name: Create Jenkins Server
+  local_action: ec2
+                image={{ image }}
+                instance_type={{ instance_type }}
+                group={{ security_group }}
+                region={{ region }}
+                keypair={{ keypair }}
+                count={{ count }}
+                wait=true
+  register: ec2
