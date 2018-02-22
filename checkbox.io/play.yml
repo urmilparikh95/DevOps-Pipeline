@@ -1,0 +1,121 @@
+---
+- hosts: checkbox
+
+  vars:
+    MONGO_PORT: "{{ lookup('env', 'MONGO_PORT') }}"
+    MONGO_IP: "{{ lookup('env', 'MONGO_IP') }}"
+    MONGO_USER: "{{ lookup('env', 'MONGO_USER') }}"
+    MONGO_PASSWORD: "{{ lookup('env', 'MONGO_PASSWORD') }}"
+    # MAIL_USER: "{{ lookup('env', 'MAIL_USER') }}"
+    # MAIL_PASSWORD: "{{ lookup('env', 'MAIL_PASSWORD') }}"
+    # MAIL_SMTP: "{{ lookup('env', 'MAIL_SMTP') }}"
+
+  tasks:
+
+  - name: Get nodejs 9.x setup
+    shell: curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+
+  - name: Install nodejs
+    update_cache: yes
+    apt:
+      name: nodejs
+    become: yes
+    force: yes
+
+  - name: Add mongo ppa key
+    apt_key:
+      keyserver: hkp://keyserver.ubuntu.com:80
+      id: 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
+      state: present 
+    become: yes
+
+  - name: Add mongo sources list
+    apt_repository:
+      repo: "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.6 multiverse"
+      state: present
+    become: yes
+
+  - name: Install mongodb 3.6
+    update_cache: yes
+    apt:
+      name: mongodb-org
+      state: latest
+    become: yes
+    force: yes
+
+  - name: Install dependencies
+    update_cache: yes
+    apt:
+      name: '{{ item }}'
+      state: latest
+    with_items:
+      - git
+      - nginx
+      - python-pip
+    become: yes
+
+  - name: Install pymongo
+    pip:
+      name: pymongo
+      version: 3.6.0
+      use_mirrors: no
+    become: yes
+
+  - name: git clone
+    git: 
+      repo: https://github.com/chrisparnin/checkbox.io.git
+      dest: /sync_data/checkbox/
+    force: yes
+
+  - name: del nginx.conf
+    file: 
+      path: /etc/nginx/nginx.conf
+      state: absent
+    become: yes
+
+  - name: del default
+    file: 
+      path: /etc/nginx/sites-available/default
+      state: absent
+    become: yes
+
+  - name: copy nginx.conf
+    shell: cp /sync_data/checkbox/local-conf/nginx.conf /etc/nginx/nginx.conf
+    become: yes
+
+  - name: copy default
+    shell: cp /sync_data/checkbox/local-conf/default /etc/nginx/sites-available/default
+    become: yes
+
+  - name: Modify checkbox.io
+    replace:
+      path: /etc/nginx/sites-available/default
+      regexp: '/Users/gameweld/bitbucket/checkbox.io/checkbox.io/public_html/'
+      replace: '/sync_data/checkbox/public_html'
+    become: yes
+
+  - name: start the mongod service
+    service: 
+      name: '{{ item }}'
+      state: restarted
+    with_items:
+      - mongod
+      - nginx
+    become: yes
+
+  - name: npm Install
+    npm:
+      path: /sync_data/checkbox/server-side/site/
+
+  - name: Run
+    command: node server.js
+    args: 
+      chdir: /sync_data/checkbox/server-side/site/
+    environment:
+      MONGO_PORT: "{{ MONGO_PORT }}"
+      MONGO_IP: "{{ MONGO_IP }}"
+      MONGO_USER: "{{ MONGO_USER }}"
+      MONGO_PASSWORD: "{{ MONGO_PASSWORD }}"
+      MAIL_USER: "{{ MAIL_USER }}"
+      MAIL_PASSWORD: "{{ MAIL_PASSWORD }}"
+      MAIL_SMTP: "{{ MAIL_SMTP }}"
