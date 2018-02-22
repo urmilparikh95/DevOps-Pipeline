@@ -8,7 +8,7 @@
   become: yes
   
 - name: Run
-  command: nohup node server.js &
+  command: bash -lc "nohup node server.js &"
   args: 
     chdir: /sync_data/checkbox/server-side/site/
   environment:
