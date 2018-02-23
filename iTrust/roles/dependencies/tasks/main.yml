@@ -19,13 +19,13 @@
   become: yes
 
 - name: Install dependencies
+  update_cache: yes
   apt: 
     name: '{{ item }}' 
     state: latest 
-    update-cache: yes
   with_items:
     - git
     - oracle-java8-installer
     - maven
-    - mysql-server-5.5
+    - mysql-server
   become: yes

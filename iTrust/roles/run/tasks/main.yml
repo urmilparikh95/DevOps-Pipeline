@@ -1,15 +1,10 @@
-- name: start the mongod service
-  service: 
-    name: mysql
-    state: restarted
-  become: yes
-
 - name: mvn process
   command: mvn process-test-classes
   args:
-    chdir: /home/vagrant/git/iTrust2/
+    chdir: /home/ubuntu/iTrust/iTrust2/
+  become_user: root
 
 - name: mvn run
   command: nohup mvn jetty:run &
   args:
-    chdir: /home/vagrant/git/iTrust2/
+    chdir: /home/ubuntu/iTrust/iTrust2/

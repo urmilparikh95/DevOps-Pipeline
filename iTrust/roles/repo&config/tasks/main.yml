@@ -1,26 +1,37 @@
 - name: Git clone iTrust
   git: 
     repo: https://{{githubuser}}:{{githubpassword}}@github.ncsu.edu/engr-csc326-staff/iTrust2-v2.git 
-    dest: /home/vagrant/git/
+    dest: /home/ubuntu/iTrust/
   force: yes
 
 - name: Copy hibernate template file
   copy: 
     remote_src: yes
-    src: /home/vagrant/git/iTrust2/src/main/resources/hibernate.properties.template
-    dest: /home/vagrant/git/iTrust2/src/main/resources/hibernate.properties
+    src: /home/ubuntu/iTrust/iTrust2/src/main/resources/hibernate.properties.template
+    dest: /home/ubuntu/iTrust/iTrust2/src/main/resources/hibernate.properties
   become: yes
 
 - name: Copy db template file
   copy: 
     remote_src: yes
-    src: /home/vagrant/git/iTrust2/src/main/java/db.properties.template
-    dest: /home/vagrant/git/iTrust2/src/main/java/db.properties
+    src: /home/ubuntu/iTrust/iTrust2/src/main/java/db.properties.template
+    dest: /home/ubuntu/iTrust/iTrust2/src/main/java/db.properties
   become: yes
 
 - name: Copy email template file
   copy: 
     remote_src: yes
-    src: /home/vagrant/git/iTrust2/src/main/java/email.properties.template
-    dest: /home/vagrant/git/iTrust2/src/main/java/email.properties
+    src: /home/ubuntu/iTrust/iTrust2/src/main/java/email.properties.template
+    dest: /home/ubuntu/iTrust/iTrust2/src/main/java/email.properties
   become: yes 
+
+- name: start the mysql service
+  service: 
+    name: mysql
+    state: restarted
+  become: yes
+
+# - name: MVN Checkstyle
+#   command: mvn clean test verify checkstyle:checkstyle
+#   args:
+#     chdir: /home/ubuntu/iTrust/iTrust2/
