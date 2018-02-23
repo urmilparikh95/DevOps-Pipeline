@@ -17,6 +17,7 @@
     repo: 'ppa:andrei-pozolotin/maven3' 
     state: present
   become: yes
+  force: yes
 
 - name: Install dependencies
   update_cache: yes
