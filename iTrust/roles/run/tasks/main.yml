@@ -1,11 +1,11 @@
-- name: mvn process
-  command: bash -lc "mvn process-test-classes"
+- name: mvn run
+  command: bash -lc "nohup mvn jetty:run &"
   args:
     chdir: /home/ubuntu/iTrust/iTrust2/
   become: yes
 
-- name: mvn run
-  command: bash -lc "nohup mvn jetty:run &"
+- name: MVN Checkstyle
+  command: mvn clean test verify checkstyle:checkstyle
   args:
     chdir: /home/ubuntu/iTrust/iTrust2/
   become: yes

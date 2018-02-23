@@ -31,7 +31,7 @@
     block:  |
       [mysqld]
       skip-grant-tables
-  become: true 
+  become: yes 
 
 - name: start the mysql service
   service: 
@@ -39,7 +39,8 @@
     state: restarted
   become: yes
 
-# - name: MVN Checkstyle
-#   command: mvn clean test verify checkstyle:checkstyle
-#   args:
-#     chdir: /home/ubuntu/iTrust/iTrust2/
+- name: mvn process
+  command: bash -lc "mvn process-test-classes"
+  args:
+    chdir: /home/ubuntu/iTrust/iTrust2/
+  become: yes
