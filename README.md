@@ -100,15 +100,15 @@ For executing the files, initially the following environment variables need to b
       * Installing dependencies
       * Cloning the iTrust repo and configuring
       * Running the app
-  
- 
-### Screencast:  
-  
-  [Configuration and Build]()  
 
 ### Contributions:
 
 * Rishi Jain (rjain9)
+  * Manually setting up Jenkins and building jobs for checkbox.io and iTrust to evaluate dependencies and plugins. 
+  * Manually checkbox.io, iTrust to evaluate the dependencies and identifying the tasks.
+  * Developed scripts for post build action for checkbox.io and iTrust and tested them initially on Vagrant and later testing and resolving issues for succesfully running them on AWS-EC2.
+  * Worked on setting up environment variables on Jenkins Server and Production Servers(checkbox.io and iTrust).
+  * Integrated build and post build tasks.
 * Omkar Acharya (oachary)
 * Shriyansh Yadav (scyadav):
   * Worked on the post-build script for iTrust.
@@ -120,6 +120,9 @@ For executing the files, initially the following environment variables need to b
   * Solved issues with envinject on jenkins server.
   * Created task for SSH key assigning for remote provisioning in post build tasks.
 
+### Screencast:  
+
+[<img src="https://img.youtube.com/vi/pfiaKuXg8nI/0.jpg" href="Click to Watch" title="Click to Watch" height="200" width="350">](https://youtu.be/pfiaKuXg8nI)
 
 ## References
 
