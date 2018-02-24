@@ -36,28 +36,11 @@
     - jenkins
     - mysql-server
 
-# - name: Copy GitHub SSH key
-#   copy: 
-#     src: ~/.ssh/github_rsa
-#     dest: /home/ubuntu/.ssh/github_rsa
-
-# - name: Correct SSH deploy key permissions
-#   file: 
-#     dest: /home/ubuntu/.ssh/github_rsa
-#     mode: 0600
-
-# - name: Clone Repo
-#   git:
-#     repo: git@github.ncsu.edu:rjain9/CSC519DevOps-Project.git
-#     dest: /home/ubuntu/CSC519DevOps-Project
-#     key_file: /home/ubuntu/.ssh/github_rsa
-#     accept_hostkey: yes
-#     force: yes
-
 - name: Clone git repository
   git: 
     repo: https://{{ GITHUB_USERNAME }}:{{ GITHUB_PASSWORD }}@github.ncsu.edu/rjain9/CSC519DevOps-Project.git
     dest: /home/ubuntu/CSC519DevOps-Project
+    version: ConfigAndBuild
   force: yes
   become: yes
 
