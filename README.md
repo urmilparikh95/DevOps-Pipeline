@@ -14,6 +14,10 @@
 
 <img src="https://github.ncsu.edu/rjain9/CSC519DevOps-Project/blob/ConfigAndBuild/images/Architecture.png" width="1000"> 
 
+## Directory Structure
+
+<img src="https://github.ncsu.edu/rjain9/CSC519DevOps-Project/blob/ConfigAndBuild/images/DirectoryStructure.png"> 
+
 ## Screencast
 
 
@@ -22,4 +26,7 @@
 
 * [Ansible documentation](http://docs.ansible.com/ansible/latest/index.html)
 * [AWS documentation](https://aws.amazon.com/documentation/)
-*
+* [Jenkins documnetation](https://jenkins.io/doc/)
+* [Jenkins Job Builder](https://docs.openstack.org/infra/jenkins-job-builder/builders.html)
+* [MongoDB documentation](https://docs.mongodb.com/manual/)
+* [Environment variables in Jenkins](https://wiki.jenkins.io/display/JENKINS/EnvInject+Plugin)
