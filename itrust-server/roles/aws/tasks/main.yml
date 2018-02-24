@@ -1,0 +1,29 @@
+---
+- name: Create iTrust Server
+  local_action: ec2
+                aws_access_key="{{ lookup('env', 'AWS_ACCESS_KEY') }}"
+                aws_secret_key="{{ lookup('env', 'AWS_SECRET_KEY') }}"
+                image={{ image }}
+                instance_type={{ instance_type }}
+                group={{ security_group }}
+                region={{ region }}
+                keypair={{ keypair }}
+                count={{ count }}
+                wait=true
+  register: ec2
+
+- name: Wait for SSH to come up
+  wait_for: 
+    host: "{{ ec2.instances[0].public_ip }}"
+    port: 22
+    timeout: 320
+    state: started
+
+- name: Update in memory inventory file
+  add_host:
+    groups: itrust
+    hostname: "{{ ec2.instances[0].public_ip }}"
+    ansible_ssh_user: "ubuntu"
+    ansible_ssh_private_key_file: "/home/ubuntu/.ssh/aws_itrust.key"
+    ansible_python_interpreter: "/usr/bin/python3"
+    host_key_checking: "False"

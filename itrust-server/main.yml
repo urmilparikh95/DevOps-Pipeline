@@ -1,0 +1,14 @@
+---
+- name: Create an EC2 instance for iTrust server
+  hosts: local
+  connection: local
+  become: false
+  roles:
+    - aws
+
+- name: Itrust server
+  hosts: itrust
+  roles: 
+    - dependencies
+    - repo&config
+    - run

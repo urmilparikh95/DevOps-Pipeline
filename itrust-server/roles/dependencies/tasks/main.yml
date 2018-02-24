@@ -1,0 +1,25 @@
+- name: Add repo for java 8
+  apt_repository: 
+    repo: 'ppa:webupd8team/java' 
+    state: present
+  become: yes
+
+- name: Set license selected for oracle java 8
+  shell: /bin/echo debconf shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+  become: yes
+
+- name: Set license seen for oracle java 8
+  shell: /bin/echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-set-selections
+  become: yes
+
+- name: Install dependencies
+  update_cache: yes
+  apt: 
+    name: '{{ item }}' 
+    state: latest 
+  with_items:
+    - git
+    - oracle-java8-installer
+    - maven
+    - mysql-server
+  become: yes
