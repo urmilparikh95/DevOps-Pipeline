@@ -18,7 +18,7 @@
 
 <img src="https://github.ncsu.edu/rjain9/CSC519DevOps-Project/blob/ConfigAndBuild/images/DirectoryStructure.png"> 
 
-## Tasks and Challenges:
+## Instructions for code execution
 
 ### Set Environment Variables:  
 
@@ -37,6 +37,15 @@ For executing the files, initially the following environment variables need to b
    11.  MAIL_PASSWORD
    12.  MAIL_SMTP
   ```  
+
+### Running the script:
+* Clone this repo and checkout to `ConfigAndBuild` branch
+* Run the following command:
+```sh
+$ ansible-playbook -i inventory jenkins-server/main.yml
+```
+
+## Tasks and Challenges:
 
 ### Provisioning AWS servers:  
   
