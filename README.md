@@ -74,10 +74,8 @@ For executing the files, initially the following environment variables need to b
     
   * **iTrust:**
     ```
-    mvn process-test-classes
     mvn clean test verify checkstyle:checkstyle
     ```
-  
 
 ### Post-build Jobs:
 
@@ -112,7 +110,10 @@ For executing the files, initially the following environment variables need to b
 
 * Rishi Jain (rjain9)
 * Omkar Acharya (oachary)
-* Shriyansh Yadav (scyadav)
+* Shriyansh Yadav (scyadav):
+  * Worked on the post-build script for iTrust.
+  * Worked on dealing with the mongodb issue and initial post-build job for checkbox.io
+  * Started with the creation of build-jobs using jenkins-job-builder
 * Urmil Parikh (uparikh): 
   * Wrote basic script for iTrust. Tested it manually on vagrant machine.
   * Solved issues with iTrust deployment on ec2 instance by changing mysql config file.
