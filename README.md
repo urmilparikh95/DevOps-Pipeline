@@ -146,5 +146,6 @@ $ ansible-playbook -i inventory jenkins-server/main.yml
 * [AWS documentation](https://aws.amazon.com/documentation/)
 * [Jenkins documnetation](https://jenkins.io/doc/)
 * [Jenkins Job Builder](https://docs.openstack.org/infra/jenkins-job-builder/builders.html)
+* [Jenkins Setup Wizard](https://wiki.jenkins.io/display/JENKINS/Disable+security)
 * [MongoDB documentation](https://docs.mongodb.com/manual/)
 * [Environment variables in Jenkins](https://wiki.jenkins.io/display/JENKINS/EnvInject+Plugin)
