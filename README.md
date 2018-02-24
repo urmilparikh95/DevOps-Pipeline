@@ -18,7 +18,100 @@
 
 <img src="https://github.ncsu.edu/rjain9/CSC519DevOps-Project/blob/ConfigAndBuild/images/DirectoryStructure.png"> 
 
-## Screencast
+## Tasks and Challenges:
+
+### Set Environment Variables:  
+
+For executing the files, initially the following environment variables need to be setup:  
+  ```
+    1.  AWS_KEY_PAIR
+    2.  AWS_ACCESS_KEY
+    3.  AWS_SECRET_KEY
+    4.  GITHUB_USERNAME
+    5.  GITHUB_PASSWORD
+    6.  MONGO_PORT
+    7.  MONGO_IP
+    8.  MONGO_USER
+    9.  MONGO_PASSWORD
+   10.  MAIL_USER
+   11.  MAIL_PASSWORD
+   12.  MAIL_SMTP
+  ```  
+
+### Provisioning AWS servers:  
+  
+  We have provisioned 3 AWS servers: A Jenkins Server and 2 application servers for checkbox.io and iTrust. The server setup 
+  was automated using Ansible. For the Jenkins server, we have also installed certain plugins: git, maven-plugin, nodejs, 
+  postbuild-task,  envinject. 
+  
+  After the successful run of build jobs, the post-build jobs create two AWS application servers for checkbox.io and iTrust.
+  
+* **Challenges:**  
+  The major challenge while automating Jenkins server setup, was to avoid the 'Jenkins setup page'. Later, it was overcome by
+  adding wait for Jenkins to start and later, disabling the setup wizard by making the following changes to the config file:
+  
+    ```
+    <useSecurity>true</useSecurity>
+    <authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>
+    <securityRealm class="hudson.security.SecurityRealm$None"/>
+    ```
+
+### Build Jobs:   
+  
+  Our final goal is to setup two different applications on different VMs- 
+  * checkbox.io  
+  * iTrust  
+    
+  **Challenges:**
+  The documentation and resources for Jenkins-job-builder were limited and hence a good amount of time was spent in
+  learning how to build jobs using it.
+  The build jobs for each of the applications were as follows:
+  
+  * **checkbox.io:**
+    ```
+    npm install
+    ```
+    
+  * **iTrust:**
+    ```
+    mvn process-test-classes
+    mvn clean test verify checkstyle:checkstyle
+    ```
+  
+
+### Post-build Jobs:
+
+  * checkbox.io:
+    
+    * **Challenges:**
+      
+      For nginx setup, we had to make certain changes in the config and defaults file. We weren't aware of copying the 
+      config files to  the new location for it to run on the web server.  
+      For Mongo DB, we had to make sure the mongodb admin user is created with proper roles, to avoid any access issues.
+      
+      The post build jobs consisted of:
+      * Installing dependencies
+      * Cloning the checkbox.io repo and configuring
+      * Running the app
+    
+  * iTrust:
+    
+    * **Challenges:**
+      
+      For MySQL DB, we encountered 'Access Denied for root@localhost' multiple times. Later, to overcome it, we understood
+      we had to copy some files (hibernate.properties and db.properties) to proper location and we had to add skip-grant-
+      tables in my.cnf for connection the application to mysql.
+      Thus, MySQL was configured properly. 
+      
+      The post build jobs consisted of:
+      * Installing dependencies
+      * Cloning the iTrust repo and configuring
+      * Running the app
+  
+ 
+### Screencast:  
+  
+  [Configuration and Build]()  
 
 
 
