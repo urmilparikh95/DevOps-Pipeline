@@ -1,0 +1,21 @@
+- name: start the mongod service
+  service: 
+    name: '{{ item }}'
+    state: restarted
+  with_items:
+    - mongod
+    - nginx
+  become: yes
+  
+- name: Run
+  command: bash -lc "nohup node server.js &"
+  args: 
+    chdir: /home/ubuntu/checkbox/server-side/site/
+  environment:
+    MONGO_PORT: "{{ MONGO_PORT }}"
+    MONGO_IP: "{{ MONGO_IP }}"
+    MONGO_USER: "{{ MONGO_USER }}"
+    MONGO_PASSWORD: "{{ MONGO_PASSWORD }}"
+    MAIL_USER: "{{ MAIL_USER }}"
+    MAIL_PASSWORD: "{{ MAIL_PASSWORD }}"
+    MAIL_SMTP: "{{ MAIL_SMTP }}"

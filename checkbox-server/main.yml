@@ -1,0 +1,13 @@
+---
+- name: Create an EC2 instance for Checkbox server
+  hosts: local
+  connection: local
+  become: false
+  roles:
+    - aws
+
+- hosts: checkbox
+  roles: 
+  - dependencies
+  - repo&config
+  - run
