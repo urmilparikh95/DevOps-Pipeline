@@ -1,7 +1,0 @@
----
-instance_type: t2.micro
-image: ami-965e6bf3
-security_group: default
-region: us-east-2
-keypair: "{{ lookup('env', 'AWS_KEY_PAIR') }}"
-count: 3

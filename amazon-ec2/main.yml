@@ -1,7 +1,0 @@
----
-- name: Create Amazon EC2 instances
-  hosts: local
-  connection: local
-  become: false
-  roles:
-    - aws
