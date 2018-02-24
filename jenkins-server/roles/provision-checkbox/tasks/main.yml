@@ -1,0 +1,11 @@
+---  
+- name: Copy Checkbox's build job (YML script) to Jenkins server
+  template:
+    src: checkbox.yml
+    dest: /home/ubuntu/CSC519DevOps-Project/jenkins-server/roles/provision-checkbox/files/checkbox.yml
+
+- name: Create Checkbox's build job on Jenkins server using Jenkins Job Builder
+  command: jenkins-jobs update /home/ubuntu/CSC519DevOps-Project/jenkins-server/roles/provision-checkbox/files/checkbox.yml
+
+- name: Build Checkbox's job
+  command: java -jar "{{ jenkins_jar_location }}" -s http://"{{ jenkins_hostname }}":"{{ jenkins_port }}" build checkbox

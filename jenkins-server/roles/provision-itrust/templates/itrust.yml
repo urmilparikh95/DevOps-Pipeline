@@ -1,0 +1,48 @@
+- job:
+    block-downstream: false
+    block-upstream: false
+    builders:
+    - shell: cd /home/ubuntu/itrust/iTrust2 && mvn clean test verify checkstyle:checkstyle
+    concurrent: false
+    description: iTrust2's Build job<!-- Managed by Jenkins Job Builder -->
+    disabled: false
+    name: !!python/unicode 'itrust'
+    project-type: freestyle
+    publishers:
+    - post-tasks:
+      - escalate-status: true
+        matches:
+        - log-text: role=ROLE_HCP, enabled=1, username=lockoutUser2
+          operator: AND
+        run-if-job-successful: false
+        script: /home/ubuntu/CSC519DevOps-Project/jenkins-server/roles/provision-jenkins/files/provision-itrust.sh
+    triggers: []
+    wrappers:
+    - raw:
+        xml: |
+          <EnvInjectPasswordWrapper plugin="envinject@2.1.5">
+          <injectGlobalPasswords>true</injectGlobalPasswords>
+          <maskPasswordParameters>true</maskPasswordParameters>
+          <passwordEntries>
+          <EnvInjectPasswordEntry>
+          <name>AWS_KEY_PAIR</name>
+          <value>{{ lookup('env', 'AWS_KEY_PAIR') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>AWS_ACCESS_KEY</name>
+          <value>{{ lookup('env', 'AWS_ACCESS_KEY') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>AWS_SECRET_KEY</name>
+          <value>{{ lookup('env', 'AWS_SECRET_KEY') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>GITHUB_USERNAME</name>
+          <value>{{ lookup('env', 'GITHUB_USERNAME') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>GITHUB_PASSWORD</name>
+          <value>{{ lookup('env', 'GITHUB_PASSWORD') }}</value>
+          </EnvInjectPasswordEntry>
+          </passwordEntries>
+          </EnvInjectPasswordWrapper>

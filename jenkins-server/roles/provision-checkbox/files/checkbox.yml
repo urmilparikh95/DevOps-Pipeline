@@ -1,0 +1,67 @@
+- job:
+    name: checkbox
+    description: "Checkbox's Build job"
+    project-type: freestyle
+    scm:
+      - git:
+          url: https://github.com/chrisparnin/checkbox.io
+          branches:
+            - origin/master
+
+    builders:
+      - shell: 'cd server-side/site && npm install'
+
+    publishers:
+    - post-tasks:
+      - escalate-status: true
+        matches:
+        - log-text: "validator@6.3.0"
+          operator: AND
+        run-if-job-successful: false
+        script: /home/ubuntu/CSC519DevOps-Project/jenkins-server/roles/provision-jenkins/files/provision-checkbox.sh
+    triggers: []
+    wrappers:
+    - raw:
+        xml: |
+          <EnvInjectPasswordWrapper plugin="envinject@2.1.5">
+          <injectGlobalPasswords>true</injectGlobalPasswords>
+          <maskPasswordParameters>true</maskPasswordParameters>
+          <passwordEntries>
+          <EnvInjectPasswordEntry>
+          <name>AWS_KEY_PAIR</name>
+          <value>{{ lookup('env', 'AWS_KEY_PAIR') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>AWS_ACCESS_KEY</name>
+          <value>{{ lookup('env', 'AWS_ACCESS_KEY') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>AWS_SECRET_KEY</name>
+          <value>{{ lookup('env', 'AWS_SECRET_KEY') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>GITHUB_USERNAME</name>
+          <value>{{ lookup('env', 'GITHUB_USERNAME') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>GITHUB_PASSWORD</name>
+          <value>{{ lookup('env', 'GITHUB_PASSWORD') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>MONGO_PORT</name>
+          <value>{{ lookup('env', 'MONGO_PORT') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>MONGO_IP</name>
+          <value>{{ lookup('env', 'MONGO_IP') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>MONGO_USER</name>
+          <value>{{ lookup('env', 'MONGO_USER') }}</value>
+          </EnvInjectPasswordEntry>
+          <EnvInjectPasswordEntry>
+          <name>MONGO_PASSWORD</name>
+          <value>{{ lookup('env', 'MONGO_PASSWORD') }}</value>
+          </EnvInjectPasswordEntry>
+          </passwordEntries>
+          </EnvInjectPasswordWrapper>

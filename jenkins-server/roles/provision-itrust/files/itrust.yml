@@ -1,0 +1,14 @@
+- job:
+    name: itrust
+    description: "iTrust2's Build job"
+    project-type: freestyle
+
+    builders:
+      - shell: 'cd /home/ubuntu/itrust/iTrust2 && mvn clean test verify checkstyle:checkstyle'
+
+    publishers:
+      - post-tasks:
+        - matches:
+          - log-text: "role=ROLE_HCP, enabled=1, username=lockoutUser2"
+          script: /home/ubuntu/CSC519DevOps-Project/jenkins-server/roles/provision-jenkins/files/provision-itrust.sh
+          escalate-status: true

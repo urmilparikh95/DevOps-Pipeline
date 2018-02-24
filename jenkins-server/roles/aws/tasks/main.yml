@@ -1,0 +1,27 @@
+---
+- name: Create Jenkins Server
+  local_action: ec2
+                image={{ image }}
+                instance_type={{ instance_type }}
+                group={{ security_group }}
+                region={{ region }}
+                keypair={{ keypair }}
+                count={{ count }}
+                wait=true
+  register: ec2
+
+- name: Wait for SSH to come up
+  wait_for: 
+    host: "{{ ec2.instances[0].public_ip }}"
+    port: 22
+    timeout: 320
+    state: started
+
+- name: Update in memory inventory file
+  add_host:
+    groups: jenkins
+    hostname: "{{ ec2.instances[0].public_ip }}"
+    ansible_ssh_user: "ubuntu"
+    ansible_ssh_private_key_file: "~/.ssh/aws.key"
+    ansible_python_interpreter: "/usr/bin/python3"
+    host_key_checking: "False"

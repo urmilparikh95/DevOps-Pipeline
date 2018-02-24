@@ -1,0 +1,212 @@
+---
+- name: Update cache
+  apt:
+    update_cache: yes
+
+- name: Add Ansible repo
+  apt_repository:
+    repo: ppa:ansible/ansible
+    update_cache: yes
+    state: present
+
+- name: Add Java 8 repository
+  apt_repository:
+    repo: 'ppa:openjdk-r/ppa'
+
+- name: Get Jenkins files
+  shell: wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add -
+
+- name: Setup Jenkins
+  shell: sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+- name: Update apt packages
+  apt:
+    update_cache: true
+
+- name: Install packages
+  apt: name={{ item }} state=present
+  with_items:
+    - git
+    - nodejs-legacy
+    - npm
+    - maven
+    - python3-pip
+    - ansible
+    - openjdk-8-jdk
+    - jenkins
+    - mysql-server
+
+# - name: Copy GitHub SSH key
+#   copy: 
+#     src: ~/.ssh/github_rsa
+#     dest: /home/ubuntu/.ssh/github_rsa
+
+# - name: Correct SSH deploy key permissions
+#   file: 
+#     dest: /home/ubuntu/.ssh/github_rsa
+#     mode: 0600
+
+# - name: Clone Repo
+#   git:
+#     repo: git@github.ncsu.edu:rjain9/CSC519DevOps-Project.git
+#     dest: /home/ubuntu/CSC519DevOps-Project
+#     key_file: /home/ubuntu/.ssh/github_rsa
+#     accept_hostkey: yes
+#     force: yes
+
+- name: Clone git repository
+  git: 
+    repo: https://{{ GITHUB_USERNAME }}:{{ GITHUB_PASSWORD }}@github.ncsu.edu/rjain9/CSC519DevOps-Project.git
+    dest: /home/ubuntu/CSC519DevOps-Project
+  force: yes
+  become: yes
+
+- name: Correct GitHub repo permissions
+  shell: chmod -R 777 /home/ubuntu/CSC519DevOps-Project/
+  become: yes
+
+- name: Start Jenkins
+  shell: service jenkins start
+
+- name: Wait for Jenkins to start
+  wait_for:
+    port: "{{ jenkins_port }}"
+    delay: "{{ jenkins_delay }}"
+    
+- name: Copy Jenkins' config file
+  copy:
+    remote_src: True
+    src: /home/ubuntu/CSC519DevOps-Project/jenkins-server/roles/provision-jenkins/files/jenkins_config.xml
+    dest: /var/lib/jenkins/config.xml
+    mode: 777
+
+- name: Disable Jenkins' setup wizard
+  replace:
+    path: "{{ jenkins_defaults_file }}"
+    regexp: '.*headless.*$' 
+    replace: "{{ jenkins_java_args }}"
+
+- name: Allow Jenkins to run as the super user
+  replace:
+    path: /etc/default/jenkins
+    regexp: '^JENKINS_USER=\$NAME' 
+    replace: 'JENKINS_USER="root"'
+
+- name: Restart Jenkins
+  shell: service jenkins restart
+
+- name: Wait for Jenkins to restart
+  wait_for:
+    port: "{{ jenkins_port }}"
+    delay: "{{ jenkins_delay }}"
+
+- name: Download CLI jar
+  get_url:
+    url: "{{ jenkins_cli_jar }}"
+    dest: "{{ jenkins_jar_location }}"
+    mode: 755
+
+- name: Install Jenkins Plugins
+  command: java -jar "{{ jenkins_jar_location }}" -s "{{ jenkins_url }}" install-plugin "{{ item }}"
+  with_items:
+    - git
+    - maven-plugin
+    - nodejs
+    - postbuild-task
+    - envinject
+
+- name: Restart Jenkins
+  shell: service jenkins restart
+
+- name: Wait for Jenkins to restart
+  wait_for:
+    port: "{{ jenkins_port }}"
+    delay: "{{ jenkins_delay }}"
+
+- name: Install Jenkins Job Builder
+  pip:
+    name: jenkins-job-builder
+
+- name: Clone Boto's repository
+  git: 
+    repo: git://github.com/boto/boto.git
+    dest: /home/ubuntu/boto/
+    force: yes
+
+- name: Install Boto
+  shell: cd /home/ubuntu/boto && python setup.py install
+
+- name: Install AWSCLI
+  pip:
+    name: awscli
+    
+- name: Create Jenkins job directory
+  file:
+    path: /etc/jenkins_jobs
+    state: directory
+    mode: 644
+
+- name: Copy Jenkins jobs config
+  copy:
+    src: /etc/jenkins_jobs/jenkins_jobs.ini
+    dest: /etc/jenkins_jobs/jenkins_jobs.ini
+    mode: 644
+
+- pip:
+    name: boto
+
+- name: Create Ckeckbox AWS key
+  ec2_key:
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_KEY') }}"
+    name: checkbox
+    region: "{{ lookup('env', 'AWS_REGION') }}"
+    state: present
+  register: ec2_c
+
+- name: Generate AWS private key
+  copy:
+    content: "{{ ec2_c.key.private_key }}"
+    dest: /home/ubuntu/.ssh/aws_checkbox.key
+    mode: 0600
+
+- name: Create iTrust AWS key
+  ec2_key:
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_KEY') }}"
+    name: itrust
+    region: "{{ lookup('env', 'AWS_REGION') }}"
+    state: present
+  register: ec2_i
+
+- name: Generate AWS private key
+  copy:
+    content: "{{ ec2_i.key.private_key }}"
+    dest: /home/ubuntu/.ssh/aws_itrust.key
+    mode: 0600
+
+# - name: Create .aws directory
+#   file:
+#     path: /home/ubuntu/.aws
+#     state: directory
+#     mode: 644
+
+- name: Set environment variables
+  blockinfile:
+    path: /etc/environment
+    block: |
+      export GITHUB_USERNAME={{ lookup('env', 'GITHUB_USERNAME') }}
+      export GITHUB_PASSWORD={{ lookup('env', 'GITHUB_PASSWORD') }}
+      export AWS_REGION={{ lookup('env', 'AWS_REGION') }}
+      export AWS_ACCESS_KEY={{ lookup('env', 'AWS_ACCESS_KEY') }}
+      export AWS_SECRET_KEY={{ lookup('env', 'AWS_SECRET_KEY') }}
+      export AWS_KEY_PAIR={{ lookup('env', 'AWS_KEY_PAIR') }}
+      export MONGO_IP={{ lookup('env', 'MONGO_IP') }}
+      export MONGO_PORT={{ lookup('env', 'MONGO_PORT') }}
+      export MONGO_USER={{ lookup('env', 'MONGO_USER') }}
+      export MONGO_PASSWORD={{ lookup('env', 'MONGO_PASSWORD') }}
+      export MAIL_USER="{{ lookup('env', 'MAIL_USER') }}"
+      export MAIL_PASSWORD="{{ lookup('env', 'MAIL_PASSWORD') }}"
+      export MAIL_SMTP="{{ lookup('env', 'MAIL_SMTP') }}"
+    create: yes
+    state: present

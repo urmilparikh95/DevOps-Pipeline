@@ -1,0 +1,53 @@
+---  
+- name: Git clone iTrust
+  git: 
+    repo: https://{{ GITHUB_USERNAME }}:{{ GITHUB_PASSWORD }}@github.ncsu.edu/engr-csc326-staff/iTrust2-v2.git 
+    dest: /home/ubuntu/itrust/
+  force: yes
+  become: yes
+
+- name: Copy hibernate template file
+  copy: 
+    remote_src: yes
+    src: /home/ubuntu/itrust/iTrust2/src/main/resources/hibernate.properties.template
+    dest: /home/ubuntu/itrust/iTrust2/src/main/resources/hibernate.properties
+  become: yes
+
+- name: Copy db template file
+  copy: 
+    remote_src: yes
+    src: /home/ubuntu/itrust/iTrust2/src/main/java/db.properties.template
+    dest: /home/ubuntu/itrust/iTrust2/src/main/java/db.properties
+  become: yes
+
+- name: Copy email template file
+  copy: 
+    remote_src: yes
+    src: /home/ubuntu/itrust/iTrust2/src/main/java/email.properties.template
+    dest: /home/ubuntu/itrust/iTrust2/src/main/java/email.properties
+  become: yes
+
+- name: Add skip-grant-tables in my.cnf
+  blockinfile:
+    path: /etc/mysql/my.cnf
+    block:  |
+      [mysqld]
+      skip-grant-tables
+  become: true 
+
+- name: start the mysql service
+  service: 
+    name: mysql
+    state: restarted
+  become: yes
+
+- name: Copy iTrust's job
+  template:
+    src: itrust.yml
+    dest: /home/ubuntu/CSC519DevOps-Project/jenkins-server/roles/provision-itrust/files/itrust.yml
+
+- name: Create iTrust's build job on Jenkins server using Jenkins Job Builder
+  command: jenkins-jobs update /home/ubuntu/CSC519DevOps-Project/jenkins-server/roles/provision-itrust/files/itrust.yml
+
+- name: Build iTrust's job
+  command: java -jar "{{ jenkins_jar_location }}" -s http://"{{ jenkins_hostname }}":"{{ jenkins_port }}" build itrust
