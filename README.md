@@ -88,11 +88,6 @@ For executing the files, initially the following environment variables need to b
       For nginx setup, we had to make certain changes in the config and defaults file. We weren't aware of copying the 
       config files to  the new location for it to run on the web server.  
       For Mongo DB, we had to make sure the mongodb admin user is created with proper roles, to avoid any access issues.
-      
-      The post build jobs consisted of:
-      * Installing dependencies
-      * Cloning the checkbox.io repo and configuring
-      * Running the app
     
   * iTrust:
     
@@ -103,7 +98,7 @@ For executing the files, initially the following environment variables need to b
       tables in my.cnf for connection the application to mysql.
       Thus, MySQL was configured properly. 
       
-      The post build jobs consisted of:
+  * Both the post build jobs consisted of:
       * Installing dependencies
       * Cloning the iTrust repo and configuring
       * Running the app
