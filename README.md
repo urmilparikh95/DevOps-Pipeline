@@ -111,6 +111,12 @@ For executing the files, initially the following environment variables need to b
   * Integrated build and post build tasks.
   * Created Readme and Screencast.
 * Omkar Acharya (oachary)
+  * Manually test Jenkins and bypassing its authentication by updating the config file
+  * Automate them using Ansible scripts and testing the jenkins server on AWS EC2 instance
+  * Worked on integrating builds and post-builds using triggers (jenkins-job-builder)
+  * Designed the roles and the final directory structure for the project
+  * Tested the entire pipeline and helped with the screencast
+  * Solved Jenkins' environment variable issues with envinject
 * Shriyansh Yadav (scyadav):
   * Worked on the post-build script for iTrust.
   * Worked on dealing with the mongodb issue and initial post-build job for checkbox.io
