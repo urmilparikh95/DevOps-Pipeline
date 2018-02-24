@@ -109,6 +109,7 @@ For executing the files, initially the following environment variables need to b
   * Developed scripts for post build action for checkbox.io and iTrust and tested them initially on Vagrant and later testing and resolving issues for succesfully running them on AWS-EC2.
   * Worked on setting up environment variables on Jenkins Server and Production Servers(checkbox.io and iTrust).
   * Integrated build and post build tasks.
+  * Created Readme and Screencast.
 * Omkar Acharya (oachary)
 * Shriyansh Yadav (scyadav):
   * Worked on the post-build script for iTrust.
