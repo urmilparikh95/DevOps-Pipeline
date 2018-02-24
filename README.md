@@ -113,7 +113,11 @@ For executing the files, initially the following environment variables need to b
 * Rishi Jain (rjain9)
 * Omkar Acharya (oachary)
 * Shriyansh Yadav (scyadav)
-* Urmil Parikh (uparikh)
+* Urmil Parikh (uparikh): 
+  * Wrote basic script for iTrust. Tested it manually on vagrant machine.
+  * Solved issues with iTrust deployment on ec2 instance by changing mysql config file.
+  * Solved issues with envinject on jenkins server.
+  * Created task for SSH key assigning for remote provisioning in post build tasks.
 
 
 ## References
