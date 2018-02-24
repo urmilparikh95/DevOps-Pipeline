@@ -108,6 +108,12 @@ For executing the files, initially the following environment variables need to b
   
   [Configuration and Build]()  
 
+### Contributions:
+
+* Rishi Jain (rjain9)
+* Omkar Acharya (oachary)
+* Shriyansh Yadav (scyadav)
+* Urmil Parikh (uparikh)
 
 
 ## References
